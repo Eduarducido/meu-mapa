@@ -29,6 +29,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-osm-geojson/1.0.0/leaflet-osm-geojson.min.js"></script>
     <script>
         let map; // Variável global para o mapa
 
@@ -60,10 +61,25 @@
                 arquivoOSM = 'map2.osm'; // Nome do arquivo OSM 2
             }
             
-            // Aqui você pode usar bibliotecas como Leaflet ou outros métodos para carregar o arquivo OSM
-            // Exemplo: usando Leaflet para carregar o mapa diretamente
-            // L.tileLayer('URL_do_map1_ou_map2', {}).addTo(map);
-            console.log(`Carregando o arquivo: ${arquivoOSM}`); // Apenas para teste, você deve adicionar a lógica de carregamento
+            // Carregar e converter OSM para GeoJSON
+            fetch(arquivoOSM)
+                .then(response => response.text())
+                .then(osmData => {
+                    const geojsonLayer = osmtogeojson(osmData); // Converte OSM para GeoJSON
+                    const layer = L.geoJSON(geojsonLayer, {
+                        onEachFeature: function (feature, layer) {
+                            layer.on('click', function () {
+                                // Muda a cor do polígono quando clicado
+                                if (layer.options.color === 'blue') {
+                                    layer.setStyle({ color: 'red' });
+                                } else {
+                                    layer.setStyle({ color: 'blue' });
+                                }
+                            });
+                        }
+                    }).addTo(map); // Adiciona a camada GeoJSON ao mapa
+                })
+                .catch(err => console.log('Erro ao carregar o arquivo OSM:', err));
         }
 
         // Volta para a tela de seleção
