@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mapa Interativo</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; } /* O mapa ocupará toda a altura da tela */
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Inicializar o mapa
+        const map = L.map('map').setView([-23.55052, -46.633308], 13); // Coordenadas de São Paulo (exemplo)
+
+        // Adicionar camada OSM
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Definir quarteirões com polígonos
+        const quarteirao1 = L.polygon([
+            [-23.5489, -46.6388],
+            [-23.5487, -46.6378],
+            [-23.5497, -46.6375],
+            [-23.5499, -46.6385]
+        ], { color: 'blue' }).addTo(map);
+
+        const quarteirao2 = L.polygon([
+            [-23.5502, -46.6392],
+            [-23.5500, -46.6382],
+            [-23.5510, -46.6379],
+            [-23.5512, -46.6389]
+        ], { color: 'green' }).addTo(map);
+
+        // Evento de clique para mudar cor
+        function mudarCor(event) {
+            const layer = event.target;
+            layer.setStyle({ color: layer.options.color === 'red' ? 'blue' : 'red' });
+        }
+
+        quarteirao1.on('click', mudarCor);
+        quarteirao2.on('click', mudarCor);
+    </script>
+</body>
+</html>
