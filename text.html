@@ -7,44 +7,72 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         #map { height: 100vh; } /* O mapa ocupará toda a altura da tela */
+        #selection { text-align: center; margin-top: 50px; }
+        #map-container { display: none; }
+        #selection-container { display: block; }
     </style>
 </head>
 <body>
-    <div id="map"></div>
+    <!-- Tela de Seleção -->
+    <div id="selection-container">
+        <div id="selection">
+            <h2>Escolha um Mapa</h2>
+            <button onclick="mostrarMapa('map1')">Mapa 1</button>
+            <button onclick="mostrarMapa('map2')">Mapa 2</button>
+        </div>
+    </div>
+
+    <!-- Container do Mapa -->
+    <div id="map-container">
+        <div id="map"></div>
+        <button onclick="voltarParaSelecao()">Voltar</button>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Inicializar o mapa
-        const map = L.map('map').setView([-23.55052, -46.633308], 13); // Coordenadas de São Paulo (exemplo)
+        let map; // Variável global para o mapa
 
-        // Adicionar camada OSM
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Definir quarteirões com polígonos
-        const quarteirao1 = L.polygon([
-            [-23.5489, -46.6388],
-            [-23.5487, -46.6378],
-            [-23.5497, -46.6375],
-            [-23.5499, -46.6385]
-        ], { color: 'blue' }).addTo(map);
-
-        const quarteirao2 = L.polygon([
-            [-23.5502, -46.6392],
-            [-23.5500, -46.6382],
-            [-23.5510, -46.6379],
-            [-23.5512, -46.6389]
-        ], { color: 'green' }).addTo(map);
-
-        // Evento de clique para mudar cor
-        function mudarCor(event) {
-            const layer = event.target;
-            layer.setStyle({ color: layer.options.color === 'red' ? 'blue' : 'red' });
+        // Inicializa o mapa
+        function inicializarMapa() {
+            map = L.map('map').setView([-23.55052, -46.633308], 13); // Coordenadas de São Paulo (exemplo)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
         }
 
-        quarteirao1.on('click', mudarCor);
-        quarteirao2.on('click', mudarCor);
+        // Mostra o mapa selecionado e oculta a tela de seleção
+        function mostrarMapa(mapa) {
+            document.getElementById('selection-container').style.display = 'none';
+            document.getElementById('map-container').style.display = 'block';
+            if (!map) {
+                inicializarMapa();
+            }
+            carregarMapa(mapa);
+        }
+
+        // Carrega o arquivo OSM baseado na escolha do usuário
+        function carregarMapa(mapa) {
+            let arquivoOSM = '';
+            if (mapa === 'map1') {
+                arquivoOSM = 'map1.osm'; // Nome do arquivo OSM 1
+            } else if (mapa === 'map2') {
+                arquivoOSM = 'map2.osm'; // Nome do arquivo OSM 2
+            }
+            
+            // Aqui você pode usar bibliotecas como Leaflet ou outros métodos para carregar o arquivo OSM
+            // Exemplo: usando Leaflet para carregar o mapa diretamente
+            // L.tileLayer('URL_do_map1_ou_map2', {}).addTo(map);
+            console.log(`Carregando o arquivo: ${arquivoOSM}`); // Apenas para teste, você deve adicionar a lógica de carregamento
+        }
+
+        // Volta para a tela de seleção
+        function voltarParaSelecao() {
+            document.getElementById('map-container').style.display = 'none';
+            document.getElementById('selection-container').style.display = 'block';
+            map.remove(); // Remove o mapa atual
+            map = null; // Reseta a variável do mapa
+        }
     </script>
 </body>
 </html>
