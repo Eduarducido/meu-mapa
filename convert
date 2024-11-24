@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converter OSM para GeoJSON</title>
+    <script src="https://unpkg.com/osmtogeojson/osmtogeojson.min.js"></script>
+</head>
+<body>
+    <h1>Converter Arquivo OSM para GeoJSON</h1>
+    
+    <!-- Formulário para upload do arquivo OSM -->
+    <input type="file" id="fileInput" accept=".osm" />
+    <button onclick="converterOSM()">Converter</button>
+    
+    <div id="downloadLink" style="display:none;">
+        <a id="downloadBtn" href="" download="mapa.geojson">Clique aqui para baixar o arquivo GeoJSON</a>
+    </div>
+
+    <script>
+        function converterOSM() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const osmData = event.target.result;
+
+                    // Converter OSM para GeoJSON
+                    const geojson = osmtogeojson(new DOMParser().parseFromString(osmData, 'application/xml'));
+
+                    // Criar o arquivo GeoJSON para download
+                    const blob = new Blob([JSON.stringify(geojson)], { type: 'application/json' });
+                    const link = document.getElementById("downloadBtn");
+                    link.href = URL.createObjectURL(blob);
+
+                    // Exibir o link para download
+                    document.getElementById("downloadLink").style.display = "block";
+                };
+                
+                reader.readAsText(file);
+            } else {
+                alert("Por favor, selecione um arquivo OSM primeiro.");
+            }
+        }
+    </script>
+</body>
+</html>
