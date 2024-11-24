@@ -4,38 +4,28 @@
     <title>Mapa Interativo</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Inclusão do Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
         #map { height: 100vh; } /* O mapa ocupará toda a altura da tela */
         #selection { text-align: center; margin-top: 50px; }
         #map-container { display: none; }
         #selection-container { display: block; }
     </style>
-</head>
-<body>
-    <!-- Tela de Seleção -->
-    <div id="selection-container">
-        <div id="selection">
-            <h2>Escolha um Mapa</h2>
-            <button onclick="mostrarMapa('map1')">Mapa 1</button>
-            <button onclick="mostrarMapa('map2')">Mapa 2</button>
-        </div>
-    </div>
 
-    <!-- Container do Mapa -->
-    <div id="map-container">
-        <div id="map"></div>
-        <button onclick="voltarParaSelecao()">Voltar</button>
-    </div>
-
+    <!-- Inclusão do Script do Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-osm-geojson/1.0.0/leaflet-osm-geojson.min.js"></script>
+
     <script>
         let map; // Variável global para o mapa
 
         // Inicializa o mapa
         function inicializarMapa() {
-            map = L.map('map').setView([-23.55052, -46.633308], 13); // Coordenadas de São Paulo (exemplo)
+            // Aqui não será mais definida a localização inicial, será definida quando o mapa for carregado
+            map = L.map('map'); // O mapa agora começa sem visualização inicial
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -60,7 +50,7 @@
             } else if (mapa === 'map2') {
                 arquivoOSM = 'map2.osm'; // Nome do arquivo OSM 2
             }
-            
+
             // Carregar e converter OSM para GeoJSON
             fetch(arquivoOSM)
                 .then(response => response.text())
@@ -78,6 +68,7 @@
                             });
                         }
                     }).addTo(map); // Adiciona a camada GeoJSON ao mapa
+                    map.fitBounds(layer.getBounds()); // Ajusta o mapa para caber os quarteirões carregados
                 })
                 .catch(err => console.log('Erro ao carregar o arquivo OSM:', err));
         }
@@ -90,5 +81,21 @@
             map = null; // Reseta a variável do mapa
         }
     </script>
+</head>
+<body>
+    <!-- Tela de Seleção -->
+    <div id="selection-container">
+        <div id="selection">
+            <h2>Escolha um Mapa</h2>
+            <button onclick="mostrarMapa('map1')">Mapa 1</button>
+            <button onclick="mostrarMapa('map2')">Mapa 2</button>
+        </div>
+    </div>
+
+    <!-- Container do Mapa -->
+    <div id="map-container">
+        <div id="map"></div>
+        <button onclick="voltarParaSelecao()">Voltar</button>
+    </div>
 </body>
 </html>
